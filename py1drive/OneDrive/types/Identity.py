@@ -7,6 +7,6 @@
 # of the MIT license.  See the LICENSE file for details.
 
 class Identity(object):
-	def __init__(self, id=str(), displayName=str()):
-		self.id = id
-		self.displayName = displayName
+    def __init__(self, id=None, displayName=None):
+        self.id = id
+        self.displayName = displayName

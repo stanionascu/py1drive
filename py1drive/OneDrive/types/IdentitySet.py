@@ -9,10 +9,10 @@
 from .Identity import Identity
 
 class IdentitySet(object):
-	def __init__(self, user=None, application=None, device=None):
-		if (user):
-			self.user = Identity(**user)
-		if (application):
-			self.application = Identity(**application)
-		if (device):
-			self.device = Identity(**device)
+    def __init__(self, **kwargs):
+        if 'user' in kwargs:
+            self.user = Identity(**kwargs['user'])
+        if 'application' in kwargs:
+            self.application = Identity(**kwargs['application'])
+        if 'device' in kwargs:
+            self.device = Identity(**kwargs['device'])
