@@ -65,6 +65,23 @@ class OneDriveClient(object):
         print('Recycle Bin Space: ' + common.readable_size(drive.quota.deleted))
         print('State: ' + drive.quota.state)
 
+    def get_item(self, remote_path):
+        r = resources.Item(**self._get("/drive/root:%s" % remote_path).json())
+        return r
+
+    def list(self, remote_path, **kwargs):
+        item_metadata = self.get_item(remote_path)
+        items = list()
+        if hasattr(item_metadata, 'folder'):
+            r = self._get("/drive/root:%s:/children" % remote_path).json()
+            for value in r['value']:
+                items.append(resources.Item(**value))
+        else:
+            items.append(item_metadata)
+        print("total %s" % len(items))
+        for item in items:
+            print("%12s  %s" % (common.readable_size(item.size),  item.name))
+
     def _token_saver(self, token):
         self.session['oauth2_token'] = token;
         open(self.key_store, 'w').write(yaml.dump(self.session))
