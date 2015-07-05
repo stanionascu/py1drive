@@ -7,6 +7,7 @@
 # of the MIT license.  See the LICENSE file for details.
 
 import os, sys, json, yaml
+from pprint import pprint
 import py1drive.common as common
 
 class OneDriveClient(object):
@@ -54,7 +55,19 @@ class OneDriveClient(object):
             client_secret=self.config['client_secret'])
         self._token_saver(token)
 
+    def info(self, **kwargs):
+        response = self._get('/drive').json()
+        pprint(response)
+
     def _token_saver(self, token):
         self.session['oauth2_token'] = token;
         open(self.key_store, 'w').write(yaml.dump(self.session))
+
+    def _make_url(self, method):
+        return "%s%s" % (self.api_url, method)
+
+    def _get(self, method, stream=False):
+        r = self.client.get(self._make_url(method), stream=stream)
+        r.raise_for_status()
+        return r
 
