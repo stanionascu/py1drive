@@ -9,6 +9,7 @@
 import os, sys, json, yaml
 from pprint import pprint
 import py1drive.common as common
+from py1drive.OneDrive import resources
 
 class OneDriveClient(object):
     config = []
@@ -56,8 +57,13 @@ class OneDriveClient(object):
         self._token_saver(token)
 
     def info(self, **kwargs):
-        response = self._get('/drive').json()
-        pprint(response)
+        drive = resources.Drive(**self._get('/drive').json())
+        print('Owner: ' + drive.owner.user.displayName)
+        print('Used Space: ' + common.readable_size(drive.quota.used))
+        print('Free Space: ' + common.readable_size(drive.quota.remaining))
+        print('Total Space: ' + common.readable_size(drive.quota.total))
+        print('Recycle Bin Space: ' + common.readable_size(drive.quota.deleted))
+        print('State: ' + drive.quota.state)
 
     def _token_saver(self, token):
         self.session['oauth2_token'] = token;
