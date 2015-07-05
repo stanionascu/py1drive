@@ -9,9 +9,11 @@
 import os, math
 
 def readable_size(size):
-    size_units = ('B', 'KB', 'MB', 'GB', 'TB')
+    if size == 0:
+        return '0 B '
+    size_units = ('KB', 'MB', 'GB', 'TB')
     unit = int(math.floor(math.log(size, 1024)))
-    if (unit >= len(size_units)):
+    if unit >= len(size_units):
         unit = len(size_units) - 1
     size = round(size / math.pow(1024, unit), 2)
     return "%s %s" % (size, size_units[unit])
