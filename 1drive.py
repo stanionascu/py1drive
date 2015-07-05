@@ -8,6 +8,7 @@
 # of the MIT license.  See the LICENSE file for details.
 
 import sys, os
+from py1drive.common import arg_is_dir
 
 """OneDrive Python client"""
 
@@ -29,7 +30,7 @@ def build_arg_parser():
         help='Config file to load')
     parser.add_argument('-k',
         '--key-store-dir',
-        type=str,
+        type=lambda x: arg_is_dir(parser, x),
         help='Location of the authorization key store dir')
     parser.add_argument('action',
         choices=supported_actions,
@@ -46,7 +47,22 @@ def build_arg_parser():
 def exec_action(action, local_path, remote_path):
     from urllib.parse import urlparse
     url = urlparse(remote_path)
-    sys.exit("Unsupported scheme: %s" % url.scheme)
+    if url.scheme == 'onedrive':
+        from py1drive.OneDrive.OneDriveClient import OneDriveClient as API
+    else:
+        sys.exit("Unsupported scheme: %s" % url.scheme)
+    if (url.scheme not in config):
+        config[url.scheme] = dict()
+        save_config()
+    client = API(config[url.scheme], key_store_dir=key_store_dir)
+    method = getattr(client, action, None)
+    if (method):
+        if (client.is_authorized):
+            method(local_path=local_path, remote_path=url.path)
+        else:
+            client.authorize();
+    else:
+        sys.exit("Action \"%s\" is not supported by %s" % (action, url.scheme))
 
 def save_config():
     open(config_file, 'w').write(yaml.dump(config))
