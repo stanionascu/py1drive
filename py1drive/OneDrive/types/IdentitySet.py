@@ -9,13 +9,10 @@
 from .Identity import Identity
 
 class IdentitySet(object):
-	user = None
-	application = None
-	device = None
-
 	def __init__(self, user=None, application=None, device=None):
-		self.user = Identity(**user)
-		if (self.application):
+		if (user):
+			self.user = Identity(**user)
+		if (application):
 			self.application = Identity(**application)
-		if (self.device):
+		if (device):
 			self.device = Identity(**device)
