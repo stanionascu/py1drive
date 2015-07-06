@@ -9,6 +9,7 @@
 
 import sys, os
 from py1drive.common import arg_is_dir
+from py1drive.CLI import CLI
 
 """OneDrive Python client"""
 
@@ -54,15 +55,12 @@ def exec_action(action, local_path, remote_path):
     if (url.scheme not in config):
         config[url.scheme] = dict()
         save_config()
-    client = API(config[url.scheme], key_store_dir=key_store_dir)
-    method = getattr(client, action, None)
-    if (method):
-        if (client.is_authorized):
-            method(local_path=local_path, remote_path=url.path)
-        else:
-            client.authorize();
+    cli = CLI(API(config[url.scheme], key_store_dir=key_store_dir))
+    method = getattr(cli, 'cmd_' + action, None)
+    if method:
+        method(local_path=local_path, remote_path=url.path)
     else:
-        sys.exit("Action \"%s\" is not supported by %s" % (action, url.scheme))
+        sys.exit("Action '%s' is not supported" % action)
 
 def save_config():
     open(config_file, 'w').write(yaml.dump(config))

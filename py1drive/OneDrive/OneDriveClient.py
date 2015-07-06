@@ -56,31 +56,20 @@ class OneDriveClient(object):
             client_secret=self.config['client_secret'])
         self._token_saver(token)
 
-    def info(self, **kwargs):
+    def get_drive_info(self):
         drive = resources.Drive(**self._get('/drive').json())
-        print('Owner: ' + drive.owner.user.displayName)
-        print('Used Space: ' + common.readable_size(drive.quota.used))
-        print('Free Space: ' + common.readable_size(drive.quota.remaining))
-        print('Total Space: ' + common.readable_size(drive.quota.total))
-        print('Recycle Bin Space: ' + common.readable_size(drive.quota.deleted))
-        print('State: ' + drive.quota.state)
+        return drive
 
     def get_item(self, remote_path):
         r = resources.Item(**self._get("/drive/root:%s" % remote_path).json())
         return r
 
-    def list(self, remote_path, **kwargs):
-        item_metadata = self.get_item(remote_path)
+    def get_item_children(self, remote_path, **kwargs):
+        r = self._get("/drive/root:%s:/children" % remote_path).json()
         items = list()
-        if hasattr(item_metadata, 'folder'):
-            r = self._get("/drive/root:%s:/children" % remote_path).json()
-            for value in r['value']:
-                items.append(resources.Item(**value))
-        else:
-            items.append(item_metadata)
-        print("total %s" % len(items))
-        for item in items:
-            print("%12s  %s" % (common.readable_size(item.size),  item.name))
+        for value in r['value']:
+            items.append(resources.Item(**value))
+        return items
 
     def _token_saver(self, token):
         self.session['oauth2_token'] = token;
