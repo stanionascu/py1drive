@@ -7,7 +7,7 @@
 # This software may be modified and distributed under the terms
 # of the MIT license.  See the LICENSE file for details.
 
-import sys, os
+import sys, os, logging
 from py1drive.common import arg_is_dir
 from py1drive.CLI import CLI
 
@@ -29,6 +29,11 @@ def build_arg_parser():
         '--config',
         type=argparse.FileType('r'),
         help='Config file to load')
+    parser.add_argument('-l',
+        '--log-level',
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        help='Logging verbosity',
+        default='WARNING')
     parser.add_argument('-k',
         '--key-store-dir',
         type=lambda x: arg_is_dir(parser, x),
@@ -69,6 +74,7 @@ if __name__ == '__main__':
     import yaml
     parser = build_arg_parser()
     args = parser.parse_args()
+    logging.basicConfig(level=getattr(logging, args.log_level))
 
     if (not os.path.exists(default_config_dir)):
         os.makedirs(default_config_dir)
