@@ -11,6 +11,7 @@ from pprint import pprint
 import py1drive.common as common
 from py1drive.OneDrive import resources
 
+
 class OneDriveClient(object):
     config = []
     key_store = None
@@ -64,8 +65,11 @@ class OneDriveClient(object):
         r = resources.Item(**self._get("/drive/root:%s" % remote_path).json())
         return r
 
-    def get_item_children(self, remote_path, **kwargs):
-        r = self._get("/drive/root:%s:/children" % remote_path).json()
+    def get_item_children(self, remote_path=None, id=None, **kwargs):
+        if remote_path:
+            r = self._get("/drive/root:%s:/children" % remote_path).json()
+        elif id:
+            r = self._get("/drive/items/%s/children" % id).json()
         items = list()
         for value in r['value']:
             items.append(resources.Item(**value))

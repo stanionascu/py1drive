@@ -27,7 +27,7 @@ class CLI(object):
         item_info = self.API.get_item(remote_path)
         items = list()
         if hasattr(item_info, 'folder'):
-            item_children = self.API.get_item_children(remote_path)
+            item_children = self.API.get_item_children(id=item_info.id)
             items = item_children
         else:
             items.append(item_info)
