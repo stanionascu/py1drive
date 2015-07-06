@@ -7,7 +7,7 @@
 # of the MIT license.  See the LICENSE file for details.
 
 from ..types import ItemReference, IdentitySet
-from ..facets import Folder
+from ..facets import Folder, File
 
 
 class Item(object):
@@ -25,3 +25,5 @@ class Item(object):
                 self.children.append(Item(**child))
         if 'folder' in kwargs:
             self.folder = Folder(**kwargs['folder'])
+        if 'file' in kwargs:
+            self.file = File(**kwargs['file'])
