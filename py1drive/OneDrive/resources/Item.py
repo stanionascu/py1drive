@@ -14,7 +14,8 @@ class Item(object):
     def __init__(self, **kwargs):
         self.id = kwargs['id']
         self.name = unquote(kwargs['name'])
-        self.parentReference = ItemReference(**kwargs['parentReference'])
+        if 'parentReference' in kwargs:
+            self.parentReference = ItemReference(**kwargs['parentReference'])
         self.createdBy = IdentitySet(**kwargs['createdBy'])
         self.createdDateTime = kwargs['createdDateTime']
         self.lastModifiedDateTime = kwargs['lastModifiedDateTime']
