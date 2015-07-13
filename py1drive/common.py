@@ -22,6 +22,9 @@ def arg_is_dir(parser, path):
     else:
         parser.error('%s is not a valid folder' % path)
 
+def absolute_to_relative(local, remote, path):
+    return local + path[path.index(remote) + len(remote):]
+
 class ProgressBar(object):
     def __init__(self, min_val, max_val):
         self.min_val = int(min_val)
