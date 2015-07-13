@@ -8,7 +8,7 @@
 
 import py1drive.common as common
 from py1drive.common import ProgressBar, absolute_to_relative
-import os, hashlib
+import os, hashlib, sys
 
 
 class CLI(object):
@@ -95,3 +95,12 @@ class CLI(object):
             print('')
             if item_hash.hexdigest().lower() != item_remote_hash:
                 raise Exception('Checksum mismatch!')
+
+    def cmd_mkdir(self, remote_path, **kwargs):
+        while remote_path.endswith('/'):
+            remote_path = remote_path[:len(remote_path) - 1]
+        parent_path, dir_name = os.path.split(remote_path)
+        if not dir_name:
+            sys.exit('Please provide a path e.g.: onedrive:///path/to/folder')
+        else:
+            self.API.create_dir(parent_path, dir_name)

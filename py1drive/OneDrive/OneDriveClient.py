@@ -80,6 +80,11 @@ class OneDriveClient(object):
         r = self._get("/drive/items/%s/content" % id, stream=True)
         return r
 
+    def create_dir(self, parent_path, dir_name):
+        r = self._post("/drive/root:%s:/children" % quote(parent_path),
+                       data_json={"name": dir_name, "folder": {}})
+        return resources.Item(**r.json())
+
     def _token_saver(self, token):
         self.session['oauth2_token'] = token;
         open(self.key_store, 'w').write(yaml.dump(self.session))
@@ -92,3 +97,12 @@ class OneDriveClient(object):
         r.raise_for_status()
         return r
 
+    def _post(self, method, data_json=None, stream=False):
+        headers = None
+        data = None
+        if data_json:
+            data = json.dumps(data_json)
+            headers = {'Content-Type' : 'application/json'}
+        r = self.client.post(self._make_url(method), data=data, stream=stream, headers=headers)
+        r.raise_for_status()
+        return r
