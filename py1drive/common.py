@@ -22,3 +22,23 @@ def arg_is_dir(parser, path):
     else:
         parser.error('%s is not a valid folder' % path)
 
+class ProgressBar(object):
+    def __init__(self, min_val, max_val):
+        self.min_val = int(min_val)
+        if not max_val is None:
+            self.max_val = int(max_val)
+        self.cur_val = int(min_val)
+
+    def start(self):
+        self.start_time = time.clock()
+
+    def display(self):
+        speed = readable_size(self.cur_val//(time.clock() - self.start_time))
+        if self.max_val is None:
+            sys.stdout.write("\r[%s] %s %s/s" % ('=' * 50, readable_size(self.cur_val), speed))
+        else:
+            progress = 50 * self.cur_val / self.max_val
+            int_progress = int(progress)
+            sys.stdout.write("\r%3.1f%% [%s%s] %s of %s %s/s" %
+                             ((progress/50*100), '=' * int_progress, ' ' * (50 - int_progress),
+                              readable_size(self.cur_val), readable_size(self.max_val), speed))
