@@ -8,12 +8,12 @@
 
 from ..types import ItemReference, IdentitySet
 from ..facets import Folder, File
-
+from urllib.parse import unquote
 
 class Item(object):
     def __init__(self, **kwargs):
         self.id = kwargs['id']
-        self.name = kwargs['name']
+        self.name = unquote(kwargs['name'])
         self.parentReference = ItemReference(**kwargs['parentReference'])
         self.createdBy = IdentitySet(**kwargs['createdBy'])
         self.createdDateTime = kwargs['createdDateTime']

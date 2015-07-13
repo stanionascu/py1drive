@@ -10,6 +10,7 @@ import os, sys, json, yaml
 from pprint import pprint
 import py1drive.common as common
 from py1drive.OneDrive import resources
+from urllib.parse import quote
 
 
 class OneDriveClient(object):
@@ -62,18 +63,22 @@ class OneDriveClient(object):
         return drive
 
     def get_item(self, remote_path):
-        r = resources.Item(**self._get("/drive/root:%s" % remote_path).json())
+        r = resources.Item(**self._get("/drive/root:%s" % quote(remote_path)).json())
         return r
 
     def get_item_children(self, remote_path=None, id=None, **kwargs):
         if remote_path:
-            r = self._get("/drive/root:%s:/children" % remote_path).json()
+            r = self._get("/drive/root:%s:/children" % quote(remote_path)).json()
         elif id:
             r = self._get("/drive/items/%s/children" % id).json()
         items = list()
         for value in r['value']:
             items.append(resources.Item(**value))
         return items
+
+    def get_item_content(self, id, **kwargs):
+        r = self._get("/drive/items/%s/content" % id, stream=True)
+        return r
 
     def _token_saver(self, token):
         self.session['oauth2_token'] = token;
